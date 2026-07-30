@@ -53,8 +53,9 @@ public class AuthController {
         .map(auth -> auth.getAuthority())
         .orElse("ROLE_CLIENTE");
 
-        return ResponseEntity.ok(new AuthResponse(token, userPrincipal.getUsername(),
-    userPrincipal.getUsername(), authority));
+        return ResponseEntity.ok(
+            new AuthResponse(token, usuarioEntity.getUsername(),
+        usuarioEntity.getNombre(), authority)
     }
 
     @PostMapping("/registro")
