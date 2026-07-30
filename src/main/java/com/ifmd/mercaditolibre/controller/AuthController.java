@@ -38,9 +38,11 @@ public class AuthController {
         }
     
     @PostMapping("/login")
-public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+public ResponseEntity<AuthResponse> login (@RequestBody AuthRequest request){
     Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+        new UsernamePasswordAuthenticationToken(
+            request.getUsername(), request.getPassword()
+        )
     );
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -52,20 +54,13 @@ public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         .map(auth -> auth.getAuthority())
         .orElse("ROLE_CLIENTE");
 
-    // Buscar el usuario en BD para obtener nombre real
-    UsuarioEntity usuarioEntity = usuarioService.findByUsername(userPrincipal.getUsername())
-        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-    // 👇 Aquí usamos usuarioEntity.getUsername() y usuarioEntity.getNombre()
+    // 👇 Aquí se devuelve username dos veces (como username y como nombre)
     return ResponseEntity.ok(
-        new AuthResponse(
-            token,
-            usuarioEntity.getUsername(),
-            usuarioEntity.getNombre(),
-            authority
-        )
+        new AuthResponse(token, userPrincipal.getUsername(),
+        userPrincipal.getUsername(), authority)
     );
 }
+
 
 
     @PostMapping("/registro")
