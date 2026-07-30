@@ -55,7 +55,7 @@ public class AuthController {
 
         return ResponseEntity.ok(
             new AuthResponse(token, usuarioEntity.getUsername(),
-        usuarioEntity.getNombre(), authority)
+        usuarioEntity.getNombre(), authority));
     }
 
     @PostMapping("/registro")
