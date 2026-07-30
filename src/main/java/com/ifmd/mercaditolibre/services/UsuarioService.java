@@ -2,6 +2,7 @@ package com.ifmd.mercaditolibre.services;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.Optional;
 
 import com.ifmd.mercaditolibre.dto.RegistroRequest;
 import com.ifmd.mercaditolibre.model.ClienteEntity;
