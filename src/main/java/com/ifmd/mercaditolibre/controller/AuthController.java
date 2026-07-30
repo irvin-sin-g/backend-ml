@@ -38,30 +38,35 @@ public class AuthController {
         }
     
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login (@RequestBody AuthRequest request){
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken
-            (request.getUsername(), request.getPassword())
-        );
+public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+    Authentication authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+    );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.generateToken(authentication);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    String token = jwtTokenProvider.generateToken(authentication);
 
-        User userPrincipal = (User) authentication.getPrincipal();
-        String authority = userPrincipal.getAuthorities().stream()
+    User userPrincipal = (User) authentication.getPrincipal();
+    String authority = userPrincipal.getAuthorities().stream()
         .findFirst()
         .map(auth -> auth.getAuthority())
         .orElse("ROLE_CLIENTE");
 
-        // Buscar el usuario en BD para obtener el nombre real
-    UsuarioEntity usuarioEntity = usuarioService
-        .findByUsername(userPrincipal.getUsername())
+    // Buscar el usuario en BD para obtener nombre real
+    UsuarioEntity usuarioEntity = usuarioService.findByUsername(userPrincipal.getUsername())
         .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        
-        return ResponseEntity.ok(
-            new AuthResponse(token, UsuarioEntity.getUsername(),
-        UsuarioEntity.getNombre(), authority));
-    }
+
+    // 👇 Aquí usamos usuarioEntity.getUsername() y usuarioEntity.getNombre()
+    return ResponseEntity.ok(
+        new AuthResponse(
+            token,
+            usuarioEntity.getUsername(),
+            usuarioEntity.getNombre(),
+            authority
+        )
+    );
+}
+
 
     @PostMapping("/registro")
     public ResponseEntity<?> registro(@RequestBody RegistroRequest request){
