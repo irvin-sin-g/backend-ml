@@ -1,5 +1,6 @@
 package com.ifmd.mercaditolibre.model;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Entity
