@@ -95,11 +95,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // Se agregan el origen del deploy remoto y local para desarrollo
-        configuration.setAllowedOrigins(Arrays.asList(
-            "*.sslip.io",
-            "http://localhost:5173",
-            "http://localhost:3000"
-        ));
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+
         
         // Si prefieres permitir cualquier origen durante pruebas, puedes usar setAllowedOriginPatterns:
         // configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
