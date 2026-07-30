@@ -1,7 +1,6 @@
 package com.ifmd.mercaditolibre.security;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,49 +46,37 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // 1. Permitir preflight de CORS
+                // 1. Permitir preflight de CORS en todas las rutas
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 // 2. Endpoints públicos
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/productos").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/productos", "/api/v1/productos/").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/categorias/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/proveedores/**").permitAll()
 
                 // 3. Operaciones de escritura/modificación/eliminación (Solo Administrador)
-                .requestMatchers(HttpMethod.POST, "/api/v1/productos").hasAuthority("ROLE_ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/v1/productos/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/productos", "/api/v1/productos/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/productos/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/productos/**").hasAuthority("ROLE_ADMIN")
 
-                .requestMatchers(HttpMethod.POST, "/api/v1/categorias").hasAuthority("ROLE_ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/v1/categorias/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/categorias", "/api/v1/categorias/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/categorias/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/categorias/**").hasAuthority("ROLE_ADMIN")
 
-                .requestMatchers(HttpMethod.POST, "/api/v1/proveedores").hasAuthority("ROLE_ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/v1/proveedores/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/proveedores", "/api/v1/proveedores/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/proveedores/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/proveedores/**").hasAuthority("ROLE_ADMIN")
 
                 .requestMatchers(HttpMethod.GET, "/api/v1/clientes/**").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/clientes/**").hasAuthority("ROLE_ADMIN")
 
-                // Ventas y Compras
-.requestMatchers(HttpMethod.POST, "/api/v1/ventas/procesar").permitAll()
-
-.requestMatchers(HttpMethod.GET, "/api/v1/ventas/mis-compras")
-    .hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
-
-.requestMatchers(HttpMethod.GET, "/api/v1/ventas/**")
-    .hasAuthority("ROLE_ADMIN")
-
-.requestMatchers(HttpMethod.POST, "/api/v1/ventas")
-    .hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
-
-.requestMatchers(HttpMethod.POST, "/api/v1/ventas/**")
-    .hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
+                // 4. Ventas y Compras
+                .requestMatchers(HttpMethod.POST, "/api/v1/ventas/procesar").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/ventas/mis-compras").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/ventas/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/ventas", "/api/v1/ventas/**").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
 
                 // 5. Pagos
                 .requestMatchers("/api/v1/pagos/**").permitAll()
@@ -106,10 +93,20 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+        
+        // Se agregan el origen del deploy remoto y local para desarrollo
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://bg6vb4fauvu81h61ssyqtyma.2.24.106.89.sslip.io",
+            "http://localhost:5173",
+            "http://localhost:3000"
+        ));
+        
+        // Si prefieres permitir cualquier origen durante pruebas, puedes usar setAllowedOriginPatterns:
+        // configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With"));
-        configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Link", "X-Total-Count"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
