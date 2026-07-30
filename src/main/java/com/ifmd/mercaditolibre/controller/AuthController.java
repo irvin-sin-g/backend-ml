@@ -53,6 +53,11 @@ public class AuthController {
         .map(auth -> auth.getAuthority())
         .orElse("ROLE_CLIENTE");
 
+        // Buscar el usuario en BD para obtener el nombre real
+    UsuarioEntity usuarioEntity = usuarioService
+        .findByUsername(userPrincipal.getUsername())
+        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
         return ResponseEntity.ok(
             new AuthResponse(token, UsuarioEntity.getUsername(),
         UsuarioEntity.getNombre(), authority));
