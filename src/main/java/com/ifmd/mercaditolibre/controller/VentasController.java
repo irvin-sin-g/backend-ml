@@ -54,6 +54,16 @@ public ResponseEntity<?> procesarVenta(
         return ResponseEntity.ok(servicio.obtenerVentasPorCliente(email));
     }
 
+    @PutMapping("/{id}/pagar")
+    public ResponseEntity<?> confirmarPago(@PathVariable Long id) {
+        try {
+            VentasEntity ventaPagada = servicio.confirmarPago(id);
+            return ResponseEntity.ok(ventaPagada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody VentasEntity ventas) {
         try {
