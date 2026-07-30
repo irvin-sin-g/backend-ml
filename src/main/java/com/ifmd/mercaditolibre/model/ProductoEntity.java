@@ -36,4 +36,22 @@ public class ProductoEntity {
     @ManyToOne
     @JoinColumn(name = "proveedor_id")
     private ProveedorEntity proveedor;
+
+    @JsonProperty("categoriaId")
+public void setCategoriaId(Long categoriaId) {
+    if (categoriaId != null) {
+        CategoriaEntity cat = new CategoriaEntity();
+        cat.setId(categoriaId);
+        this.categoria = cat;
+    }
+}
+
+@JsonProperty("proveedorId")
+public void setProveedorId(Long proveedorId) {
+    if (proveedorId != null) {
+        ProveedorEntity prov = new ProveedorEntity();
+        prov.setId(proveedorId);
+        this.proveedor = prov;
+    }
+}
 }
