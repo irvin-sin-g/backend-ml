@@ -54,8 +54,8 @@ public class AuthController {
         .orElse("ROLE_CLIENTE");
 
         return ResponseEntity.ok(
-            new AuthResponse(token, usuarioEntity.getUsername(),
-        usuarioEntity.getNombre(), authority));
+            new AuthResponse(token, UsuarioEntity.getUsername(),
+        UsuarioEntity.getNombre(), authority));
     }
 
     @PostMapping("/registro")
