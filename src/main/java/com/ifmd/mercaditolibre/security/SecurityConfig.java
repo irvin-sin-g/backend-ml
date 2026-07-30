@@ -96,7 +96,7 @@ public class SecurityConfig {
         
         // Se agregan el origen del deploy remoto y local para desarrollo
         configuration.setAllowedOrigins(Arrays.asList(
-            "http://bg6vb4fauvu81h61ssyqtyma.2.24.106.89.sslip.io",
+            "*.sslip.io",
             "http://localhost:5173",
             "http://localhost:3000"
         ));
