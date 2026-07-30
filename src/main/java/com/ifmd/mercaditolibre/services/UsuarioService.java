@@ -86,5 +86,8 @@ public UsuarioEntity saveUsuario(RegistroRequest request) {
 
     return usuarioGuardado;
 }
+    public Optional<UsuarioEntity> findByUsername(String username) {
+        return usuarioRepository.findByUsername(username);
+    }
 
 }
